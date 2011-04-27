@@ -1,7 +1,7 @@
 <?php
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-$zend_cache= array(
+$zend_cache= array(		
 				'frontendOpts' => array(
 								'caching' => true, 
 								'lifetime' => 1800, 
@@ -13,5 +13,6 @@ $zend_cache= array(
 									'port' => 11211  
 									), 
 								'compression' => true 								
-				)
+				),
+				'slowbackendOpts' => array()
 );

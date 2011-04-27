@@ -22,6 +22,10 @@ class CI_Smarty extends Smarty {
         $this->config_dir        = $this->CI->config->item('config_directory');
         $this->template_ext      = $this->CI->config->item('template_ext');
         $this->allow_php_tag     = $this->CI->config->item('allow_php_tag');
+        //$this->loadFilter("output","indent_html");
+        //$this->register->outputFilter("indent_html");
+        //$this->auto_literal = true ;
+        //$this->loadPlugin('smarty_outputfilter_indent_html');
         $this->exception_handler = null;
 
         // Add all helpers to plugins_dir

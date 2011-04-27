@@ -1,4 +1,5 @@
 <?php  if (!defined('BASEPATH')) exit('No direct script access allowed');
+ini_set('date.timezone', 'Asia/Bangkok');
 
 class MY_Controller extends CI_Controller  {
 
