@@ -125,19 +125,45 @@ class Ajax_action extends MY_Controller {
 		return 0;
 	}
 
-	function save() {
-		//$this->load->library('MyValidation');
-		 require_once APPPATH.'libraries/HTMLPurifier/HTMLPurifier.auto.php';
-		 $this->load->library('securimage');
-		 $this->load->library('input');
-			
-		// $this->input->ip_address()	;
+	function save() {	
+		$this->load->library('Zend');
+        $this->zend->load('Zend/Session');	
+        $session_tlc = new Zend_Session_Namespace('tlcthai');
+		require_once APPPATH.'libraries/HTMLPurifier/HTMLPurifier.auto.php';
+		$_SESSION['center_login_name']='aum';
+		$this->load->library('ip2location_lite');
+		$this->load->library('securimage');
+		$this->load->library('input');
+		
+        
+		
+		$this->load->helper('text');
+		$session_tlc = new Zend_Session_Namespace('tlcthai');	
+		$this->firephp->log($_SESSION);
+		//$this->firephp->log($this->input->ip_address());
+		//$this->firephp->log($this->ip2location_lite->getCity($this->input->ip_address()));
+		
+		$this->load->model('model_block_ip', 'block_ip');
+		$this->load->model('model_bad_word', 'bad_word');
+		
+		
+		foreach($this->block_ip->fetchAll() as $value){
+			if(!$this->input->valid_ip($value['ip'])){
+				$status['success']=0 ;
+				$status['error']="ip นี้ไม่ได้รับอนุญาตให้้ใช้งาน" ;
+				return json_encode($status);
+			}
+		}
+		
 		if($this->securimage->check(trim($_POST['code']))== false) {
 			$status['success']=0 ;
 			$status['error']="ใส่รหัสป้องกัน บอทไม่ถูกต้อง" ;
 			return json_encode($status);
 		}
-
+		
+		foreach($this->bad_word->fetchAll() as $value){
+			$bad_word[]=$value['bad_word'];
+		}
 		$htmlallow ='	object[width|height|data],
 		 				param[name|value],
 		 				a[href],
@@ -155,7 +181,8 @@ class Ajax_action extends MY_Controller {
         $config->set('HTML.Allowed',$htmlallow );
        
         $htmlpurifier = new HTMLPurifier();
-        $post_detail = $htmlpurifier->purify( $_POST['post_detail'] , $config );      
+        $post_detail = $htmlpurifier->purify( $_POST['post_detail'] , $config );   
+        $post_detail = word_censor($post_detail, $bad_word, '***');   
 		$post_name=strip_tags($_POST['post_name']);
 		$post_tag=strip_tags($_POST['post_tag']);
 		$slug=strip_tags($_POST['slug']);
