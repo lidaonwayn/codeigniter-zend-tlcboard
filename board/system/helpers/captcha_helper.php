@@ -41,7 +41,11 @@ if ( ! function_exists('create_captcha'))
 {
 	function create_captcha($data = '', $img_path = '', $img_url = '', $font_path = '')
 	{
-		$defaults = array('word' => '', 'img_path' => '', 'img_url' => '', 'img_width' => '150', 'img_height' => '30', 'font_path' => '', 'expiration' => 7200);
+		$defaults = array(
+					'word' => '', 'word_length' => 8,
+					'img_path' => '', 'img_url' => '', 
+					'img_width' => '150', 'img_height' => '30', 
+					'font_path' => '', 'expiration' => 7200);
 
 		foreach ($defaults as $key => $val)
 		{
@@ -111,7 +115,7 @@ if ( ! function_exists('create_captcha'))
 			$pool = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
 			$str = '';
-			for ($i = 0; $i < 8; $i++)
+			for ($i = 0; $i < $word_length; $i++)
 			{
 				$str .= substr($pool, mt_rand(0, strlen($pool) -1), 1);
 			}
