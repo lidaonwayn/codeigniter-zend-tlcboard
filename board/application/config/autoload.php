@@ -80,7 +80,7 @@ $autoload['helper'] = array('url', 'file', 'directory', 'string', 'assets');
 |
 */
 
-$autoload['config'] = array('facebook','assets','customs');
+$autoload['config'] = array('assets','customs');
 
 /*
 | -------------------------------------------------------------------

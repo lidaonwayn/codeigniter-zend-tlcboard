@@ -16,8 +16,7 @@
 */
 $config['base_url']	= 'http://www.tlcthai.dav/board/';
 
-$config['assets_url']	= 'http://www.tlcthai.dav/board/assets/';
-$config['assets_path']  = '/board/assets/';
+
 
 /*
 |--------------------------------------------------------------------------
@@ -183,7 +182,7 @@ $config['directory_trigger']	= 'd'; // experimental not currently in use
 | your log files will fill up very fast.
 |
 */
-$config['log_threshold'] = 4;
+$config['log_threshold'] = 2;
 
 /*
 |--------------------------------------------------------------------------
@@ -331,7 +330,7 @@ $config['compress_output'] = FALSE;
 | regarding date handling.
 |
 */
-$config['time_reference'] = 'local';
+$config['time_reference'] = 'gmt';
 
 
 /*
