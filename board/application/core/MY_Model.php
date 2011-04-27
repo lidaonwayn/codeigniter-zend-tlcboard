@@ -10,12 +10,22 @@ class MY_Model extends CI_Model {
     private $_hasLoadConstructor = false;
     private static $_conn = null;
 
+    //display logs
+    public $channel =null;
+    public $response =null;
+    public $request =null;
+    //display logs
+    
     public function __construct() {
 
         parent::__construct();
         $this->load->library('Zend');
         $this->zend->load('Zend/Db');
         $this->zend->load('Zend/Db/Expr');
+        
+        $this->zend->load('Zend/Db/Profiler');
+        $this->zend->load('Zend/Db/Profiler/Firebug');        
+        
         $this->parent_name = strtolower(get_class($this));
 
         log_message('debug', "Model intregate Zend Class Initialized");
@@ -33,17 +43,20 @@ class MY_Model extends CI_Model {
             'host' => $dbConf['hostname'],
             'username' => $dbConf['username'],
             'password' => $dbConf['password'],
-            'dbname' => $dbConf['database']
+            'dbname' => $dbConf['database'],
+        	'profiler' => array(
+		            'enabled' => true,
+		            'class' => 'Zend_Db_Profiler_Firebug'
+		            )
         );
 
         $conn = Zend_Db::factory($dbConf['dbdriver'], $params);
-
+        		
         if ($dbConf['char_set'] && $dbConf['dbcollat']) {
             $conn->Query('SET character_set_results=' . $dbConf['char_set']);
             $conn->Query('SET collation_connection=' . $dbConf['dbcollat']);
             $conn->Query('SET NAMES ' . $dbConf['char_set']);
-        }
-
+        }      	
         self::$_conn = $conn;
     }
 

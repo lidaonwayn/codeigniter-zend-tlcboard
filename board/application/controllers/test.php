@@ -275,6 +275,22 @@ class Test extends MY_Controller {
          $this->firephp->log($this->uri->segment(1));
          $this->firephp->log($_GET);
     }
+
+    function securimage_show()
+    {  	
+       	$this->load->library('securimage/securimage');
+		$img = new Securimage();
+		$img->show(); // alternate use: $img->show('/path/to/background.jpg');
+
+    }
+ 	function securimage_play()
+    {  	
+    	$this->load->library('securimage/securimage');
+       	$img    = new Securimage();
+		$img->audio_format = (isset($_GET['format']) && in_array(strtolower($_GET['format']), array('mp3', 'wav')) ? strtolower($_GET['format']) : 'mp3');
+		//$img->setAudioPath('/path/to/securimage/audio/');
+		$img->outputAudioFile();
+    }
 }
 
 
