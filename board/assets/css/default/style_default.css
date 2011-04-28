@@ -1,0 +1,35 @@
+body{background: #ececec;}
+#content{background: #ececec;}
+.formrow{ margin:5px;}
+
+fieldset {
+border: 1px solid #66CCFF;
+background: #FFF;
+padding: 5px;
+}
+
+legend {
+color: #3366FF;
+font-size: 16px;
+font-weight: bold;
+padding: 3px;
+
+}
+input{ margin-left:2px; padding:0px;}
+
+#topicname input{width:450px; padding:2px; font-size: 12px;}
+label {margin:2px;}
+
+.slug {width:450px; padding:2px; font-size: 12px; margin-bottom: 6px;}
+
+#con_post{
+	width:400px;
+}
+
+#title_header{
+color: #3366FF;
+ margin-top:45px;
+ vertical-align:middle;
+ font-size: 18px;
+ font-weight: bold;
+}
