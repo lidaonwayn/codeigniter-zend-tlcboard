@@ -17,12 +17,13 @@
 		<link rel="stylesheet" type="text/css" href="{$assets_path}css/grid960/960.css" /> 
 		<link rel="stylesheet" type="text/css" href="{$assets_path}css/jqvalidation/template.css" /> 
 		<link rel="stylesheet" type="text/css" href="{$assets_path}css/jqvalidation/validationEngine.jquery.css" /> 
+		<link rel="stylesheet" type="text/css" href="{$assets_path}css/default/style_default.css" /> 
 		<style type="text/css">
 			div.button {
 				height: 20px;	
-				width: 128px;
+				width: 115px;
 				background: url({$assets_path}img/button.png) 0 0;
-				font-size: 14px; color: #C7D92C; text-align: center; padding-top: 15px;
+				font-size: 14px; color: #C7D92C; text-align: center; padding: 5px;
 			}
 			.tagEditor {
 				margin: 4px 0;
@@ -50,12 +51,16 @@
 		<title>ทดสอบ</title>
 	</head>
 	<body>
-	<br />
-	<br />
-	<br />
-	<br />
-	<br />
-	<br />
-	<br />
-	<br />
+	<div class="container_16 clearfix">
+		<div class="grid_3" >
+			<img border="0" alt="เทคโนโลยี เกมส์ และ Triple Play ที่ทันสมัยที่สุด" src="http://www.tlcthai.com/data/index/logo/tlc_logo_8.gif">
+		</div>
+		<div class="grid_6"  id="title_header">
+			
+			Webboard TLCTHAI
+			
+		</div>
+		<div class="clear"></div>
+	</div>
+
 	
