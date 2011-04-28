@@ -8,6 +8,7 @@
 	<script type="text/javascript" src="{$assets_path}js/jquery.validationEngine-en.js"></script>
 	<script type="text/javascript" src="{$assets_path}js/jquery.validationEngine.js"></script>
 	<script type="text/javascript" src="{$assets_path}js/jquery.slug.js"></script> 
+	<script type="text/javascript" src="{$assets_path}js/jquery.blockUI.js"></script> 
 	
 	{literal}
 	<script type="text/javascript">
@@ -51,7 +52,7 @@
 
           	$("#form_post").validationEngine('attach');
         	var options = { 
-        	    //   beforeSubmit:  showRequest,  // pre-submit callback 
+        	    beforeSubmit:  showRequest,  // pre-submit callback 
         		success:       showResponse , // post-submit callback 
         		url:"/board/ajax_action/save.html",
         		type:     "post",        // 'get' or 'post', override for form's 'method' attribute 
@@ -214,16 +215,26 @@
         
     	  
         // post-submit callback 
-        function showResponse(responseText, statusText, xhr, $form)  {   
+        function showResponse(responseText, statusText, xhr, $form)  {
+        	//alert("showResponse");   
              if(responseText.success==0)
         	{
         		alert('เกิดข้อผิดพลาด'+responseText.error); 
         	}else if(responseText.success==1){
         		alert('เรียบร้อยแล้ว'); 
-        		window.location ="http://www.tlcthai.dav/board/view/cate_id="+responseText.cate_id+"&post_id="+responseText.post_id;
+        		//window.location ="http://www.tlcthai.dav/board/view/cate_id="+responseText.cate_id+"&post_id="+responseText.post_id;
         	}else{
         		alert('เกิดข้อผิดพลาด');
         	}
+             $('#form_topic').unblock(); 
+        }
+
+        function showRequest(responseText, statusText, xhr, $form)  { 
+           // alert("showRequest".statusText);
+	        $('#form_topic').block({ 
+	            message: '<h1>Processing</h1>', 
+	            css: { border: '3px solid #a00' } 
+	        }); 
         }
                     
 	</script>
