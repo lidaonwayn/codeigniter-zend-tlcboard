@@ -1,6 +1,6 @@
  {include file="`$theme`/header.tpl"}
  
-<div class="container_16 clearfix" id="content">
+<div class="container_16 clearfix" id='form_topic'>
 
 	<form method="post" action="/board/ajax_action/save/" id="form_post" id="form_post">
 		<div class="grid_11 " >
@@ -67,8 +67,24 @@
 		 	<div id='tag_count'></div><a id="resetTagsButton">ล้าง tag ทั้งหมด</a>
 			<br /><b>**พิมพ์คำที่บ่งบอกถึงเรื่องที่เกี่ยวข้องกับเนื้อหา </b><br>โดยใช้การ<b>เว้นวรรค</b> กรณีเป็นคำเชื่อมให้ใช้ <b>+</b> เป็นตัวเชื่อมคำ 
 			<div id='tag_count'></div>	
-					    </label>
-				</fieldset>
+			<!-- capcha -->
+			<div style="width: 430px; float: left; height: 90px">
+				<img id="siimage" align="left" style="padding-right: 5px; border: 0" src="/board/test/securimage_show?sid={$sid}" alt='captcha' />
+				<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,0,0" width="19" height="19" id="SecurImage_as3" align="middle">
+					<param name="allowScriptAccess" value="sameDomain" />
+					<param name="allowFullScreen" value="false" />
+					<param Name="wmode" Value="Opaque">
+					 <param name="movie" value="{$assets_path}media/securimage_play.swf?audio=/board/test/securimage_play&bgColor1=#777&bgColor2=#fff&iconColor=#000&roundedCorner=5" />
+					<param name="quality" value="high" />
+					<param name="bgcolor" value="#ffffff" />
+					<embed src="{$assets_path}media/securimage_play.swf?audio=/board/test/securimage_play&bgColor1=#777&bgColor2=#fff&iconColor=#000&roundedCorner=5" 
+					quality="high" bgcolor="#ffffff" width="19" height="19" name="SecurImage_as3" align="middle" allowScriptAccess="sameDomain" allowFullScreen="false" 
+					type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" wmode="Opaque" />
+				</object>
+				<br />
+				<!-- pass a session id to the query string of the script to prevent ie caching -->
+				 <a tabindex="-1" style="border-style: none" href="#" title="Refresh Image" onclick="document.getElementById('siimage').src = '/board/test/securimage_show?sid=' + Math.random(); return false"><img src="{$assets_path}img/refresh.gif" alt="Reload Image" border="0" onclick="this.blur()" align="bottom" /></a>
+				 <br /><input type="text" name="code" size="12" id="code" class="validate[required] text-input" /> กรุณาใส่รหัสที่เห็นในภาพด้วย<br /><br />	
 			</div>
 		</div>
 		<div class="clear"></div>
