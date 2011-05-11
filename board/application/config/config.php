@@ -129,7 +129,7 @@ $config['subclass_prefix'] = 'MY_';
 |
 */
 //$config['permitted_uri_chars'] = 'a-z 0-9~%.:_\-';
-$config['permitted_uri_chars'] = 'a-z 0-9~%?=&.:_\-';
+$config['permitted_uri_chars'] = 'ก-๙ a-z 0-9~%?=&.:_\-';
 
 /*
 |--------------------------------------------------------------------------
@@ -182,7 +182,7 @@ $config['directory_trigger']	= 'd'; // experimental not currently in use
 | your log files will fill up very fast.
 |
 */
-$config['log_threshold'] = 2;
+$config['log_threshold'] = 4;
 
 /*
 |--------------------------------------------------------------------------
@@ -281,7 +281,7 @@ $config['cookie_secure']	= FALSE;
 | COOKIE data is encountered
 |
 */
-$config['global_xss_filtering'] = FALSE;
+$config['global_xss_filtering'] = TRUE;
 
 /*
 |--------------------------------------------------------------------------
