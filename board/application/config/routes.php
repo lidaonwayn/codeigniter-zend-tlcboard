@@ -41,6 +41,7 @@
 $route['default_controller'] = "welcome";
 $route['404_override'] = '';
 
+$route['view/(:num)/(:any)'] = "view/index/$2/$3";
 // Loader
 //$route["asset/:any"] = "asset_controller/index";
 

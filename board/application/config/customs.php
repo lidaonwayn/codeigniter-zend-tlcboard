@@ -7,3 +7,5 @@ $config['urlpath_temp']= '/tmp/';
 $config['urlpath_data']= '/data/';
 $config['fullpath_temp']= 'C:\ms4w\apps\tlcthai\tmp\\';
 $config['fullpath_data']= 'C:\ms4w\apps\tlcthai\data\\';
+$config['table_reply']= 'tlcboard_reply_1';
+$config['table_modify']= 'tlcboard_post_modify';
