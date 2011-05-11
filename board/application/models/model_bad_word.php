@@ -1,7 +1,7 @@
 <?php
 class Model_bad_word extends MY_Model {
 	private $prefix;
-	private $prefix_cache = "blockip_";
+	private $prefix_cache = "badword_";
 
 	//private $cache;
 	

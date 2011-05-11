@@ -279,11 +279,17 @@ class Test extends MY_Controller {
     function securimage_show()
     {  	
        	$this->load->library('securimage/securimage');
+        $this->load->library('firephp');
 		$img = new Securimage();
+                $img->code_length = rand(4,5);
+                $img->image_width = 200;
+                $img->image_height = 80;
+                $img->perturbation = 0.85;
 		$img->show(); // alternate use: $img->show('/path/to/background.jpg');
 
     }
- 	function securimage_play()
+ 
+    function securimage_play()
     {  	
     	$this->load->library('securimage/securimage');
        	$img    = new Securimage();

@@ -60,6 +60,11 @@ class MY_Model extends CI_Model {
         self::$_conn = $conn;
     }
 
+    public function query($string) {
+        $this->connect('slave');
+        return self::$_conn->Query($string);
+    }
+    
     public function qoute($string) {
         $this->connect('slave');
         return self::$_conn->quoteIdentifier($string);
@@ -101,7 +106,7 @@ class MY_Model extends CI_Model {
     }
 
     public function insert($table, $data) {
-        $this->connect(null);
+        $this->connect('master');
         if (self::$_conn->insert($table, $data)) {
             return self::$_conn->lastInsertId();
         }
@@ -109,12 +114,12 @@ class MY_Model extends CI_Model {
     }
 
     public function update($table, $data, $where) {
-        $this->connect(null);
+        $this->connect('master');
         return self::$_conn->update($table, $data, $where);
     }
 
     public function delete($table, $where) {
-        $this->connect(null);
+        $this->connect('master');
         return self::$_conn->delete($table, $where);
     }
 
