@@ -107,6 +107,8 @@ if (!defined('SI_IMAGE_GIF'))
  * @subpackage classes
  *
  */
+
+//session_start();
 class Securimage {
 
     /**
