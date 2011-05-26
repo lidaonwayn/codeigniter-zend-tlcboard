@@ -19,12 +19,15 @@ class MY_Model extends CI_Model {
     public function __construct() {
 
         parent::__construct();
+        require(APPPATH . 'config/zend_cache.php');
         $this->load->library('Zend');
         $this->zend->load('Zend/Db');
         $this->zend->load('Zend/Db/Expr');
         
         $this->zend->load('Zend/Db/Profiler');
-        $this->zend->load('Zend/Db/Profiler/Firebug');        
+        $this->zend->load('Zend/Db/Profiler/Firebug'); 
+        
+        $this->zend->load('Zend/Cache');
         
         $this->parent_name = strtolower(get_class($this));
 

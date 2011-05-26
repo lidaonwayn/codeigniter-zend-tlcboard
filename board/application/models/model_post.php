@@ -5,35 +5,20 @@ class Model_post extends MY_Model {
     private $prefix;
     private $prefix_cache = "post_";
     public $cid;
-
-    //private $cache;
+    private $cache;
 
     function __construct() {
-        parent::__construct();
         require(APPPATH . 'config/zend_cache.php');
+        parent::__construct();
         $this->load->library('firephp');
-        $this->load->library('Zend');
-        $this->zend->load('Zend/Cache');
 
         $this->prefix=$this->config->item('table_prefix');
-        $this->prefix_cache=$this->prefix.$this->prefix_cache;
-        $zcache = $zend_cache;
-        $zcache['options'] = array(
-            'slow_backend' => 'Apc',
-            'fast_backend' => 'Memcached',
-            'slow_backend_options' => $zcache['slowbackendOpts'],
-            'fast_backend_options' => $zcache['fastbackendOpts'],
-            'stats_update_factor' => 10,
-            'slow_backend_custom_naming' => false,
-            'fast_backend_custom_naming' => false,
-            'slow_backend_autoload' => false,
-            'fast_backend_autoload' => false,
-            'auto_refresh_fast_cache' => false
-        );
+        //$this->prefix_cache=$this->prefix.$this->prefix_cache;
+
         $this->cache = Zend_Cache::factory(
                         'Core', 'Two Levels', $zcache['frontendOpts'], $zcache['options']
         );
-        //$this->cache->clean();
+        $this->cache->clean();
     }
 
     //$config is array
@@ -64,7 +49,6 @@ class Model_post extends MY_Model {
             $key_shuffix=$id;
 
         $key_cache = $this->prefix_cache . $key_shuffix;
-        //$this->firephp->log($key_cache);
         if (!($result = $this->cache->load($key_cache))) {
             $select = parent::select();
             $select->from($this->prefix . 'post')->order('post_id DESC');
@@ -83,13 +67,22 @@ class Model_post extends MY_Model {
     
     function fetch($find,$field="post_id") {
             $key_cache=$this->prefix_cache.$field.$find;
+           // $this->firephp->log("post = ".$result=$this->cache->load($key_cache));
             if(!($result=$this->cache->load($key_cache))){
+               // $this->firephp->log("no cache");
                     $select = parent::select ();
-                    $select->from ( $this->prefix.'post' )->where ( $field.'=?', $find );
+                    $select->from ( array('p'=>$this->prefix.'post') )
+                            ->join(array('c'=>$this->prefix.'category'),
+                                    'p.cate_key=c.cate_key',
+                                    array('cate_id','cate_theme')
+                                    )
+                            ->where ( $field.'=?', $find );
                     $result=parent::fetchRow( $select );
                     $this->cache->save($result,$key_cache);
+                    $result['slug']=$result['slug'].".html";
                     return $result;
             }else{
+                    $result['slug']=$result['slug'].".html";
                     return $result;
             }
     }   
@@ -108,7 +101,7 @@ class Model_post extends MY_Model {
                 }
             }		
             if($cate_key != NULL){
-                $sql_search=sprintf("SELECT  `post_id`,`cate_key`,`post_topic`,`thumb_big`,`thumb_smll` 
+                $sql_search=sprintf("SELECT  `post_id`,`cate_key`,`post_topic`,`thumb_big`,`thumb_smll`,`slug` 
                             FROM %s w WHERE EXISTS ( SELECT  1 FROM ( %s ) c  
                             WHERE   w.`slug` LIKE cond 
                             AND w.cate_key=%s 
@@ -118,7 +111,7 @@ class Model_post extends MY_Model {
                             ORDER BY post_id desc limit 5",
                             $this->prefix.'post',$sql_merg_relate,$cate_key,$post_id);
             }else{
-                $sql_search=sprintf("SELECT  `post_id`,`cate_key`,`post_topic`,`thumb_big`,`thumb_small`
+                $sql_search=sprintf("SELECT  `post_id`,`cate_key`,`post_topic`,`thumb_big`,`thumb_small`,`slug` 
                             FROM %s w WHERE EXISTS ( SELECT  1 FROM ( %s ) c  
                             WHERE   w.`slug` LIKE cond 
                             AND w.post_id!=%s 
@@ -133,20 +126,37 @@ class Model_post extends MY_Model {
         }else {
             return $result;
         }
-        
-
     }
     
-    function insert($data) {
-        
-        $pre_data[]=array();
-        foreach ($data as $key => $value) {
-            $pre_data[$key]=$value;        
+    
+    function relate($find,$field,$codition='=',$limit=5) {
+        $key_cache=$this->prefix_cache.$field.$find.$limit;
+        if(!($result=$this->cache->load($key_cache))){
+                $select = parent::select ();
+                $select->from ( $this->prefix.'post' )
+                        ->where ( $field.$codition." ?", $find )
+                        ->limit(0, $limit);
+                $result=parent::fetchRow( $select );
+                $this->cache->save($result,$key_cache);
+                return $result;
+        }else{
+                return $result;
         }
+    } 
+    
+    function insert($data) {
+        //$pre_data[]=array();
+        foreach ($data as $key => $value) {
+            if(is_numeric($key)) {
+               continue; 
+            }
+            $pre_data[$key]=$value;
+        }
+
         
         $pre_data['post_date']=new Zend_Db_Expr('NOW()');
-        $pre_data['table_reply']=$this->config->item('table_reply');
-        $pre_data['table_modify']=$this->config->item('table_modify');
+        $pre_data['table_reply']=$this->config->item('table_prefix').$this->config->item('table_reply');
+        $pre_data['table_modify']=$this->config->item('table_prefix').$this->config->item('table_modify');
         
         try {
             parent::insert($this->prefix.'post', $pre_data);
@@ -157,10 +167,49 @@ class Model_post extends MY_Model {
         }   
     }
 
-    function check_uniq($filed, $str) {
+    function update($data,$id) {
+        //$pre_data[]=array();
+        $result_post=$this->fetch($id);
+        $this->firephp->log($data);
+        foreach ($data as $key => $value) {
+            if(is_numeric($key)) {
+               continue; 
+            }elseif($key=="post_ip"){
+                $pre_data['modify_ip']=$value ;
+            }else{
+                $pre_data[$key]=$value;
+            }
+        }
+        $pre_data['modify_date']=new Zend_Db_Expr('NOW()');
+        
+        foreach ($result_post as $key => $value) {
+            if((is_numeric($key)) or ($key=="cate_id") or ($key=="cate_theme")) {
+               continue; 
+            }else{
+                $pre_olddata[$key]=$value;
+            }
+            
+        }
+ 
+        $this->firephp->log($pre_olddata);
+        
+        try {
+            parent::insert($result_post['table_modify'], $pre_olddata);
+            parent::update($this->prefix.'post', $pre_data,"post_id=".$id);
+            return TRUE;
+        }catch(Exception $e) {
+           // return($e->getMessage());
+            return FALSE;
+        }   
+    }
+    
+    function check_uniq($filed, $str,$post_id=NULL) {
         $select = parent::select();
         $select->from($this->prefix . 'post', array('count' => 'COUNT(*)'));
         $select->where($filed . '=?', $str);
+        if(!empty($post_id)){
+           $select->where('post_id!=?', $post_id); 
+        }
         $qcount=$select->query();
         $rcount=$qcount->fetchObject();
         if ($rcount->count > 0){

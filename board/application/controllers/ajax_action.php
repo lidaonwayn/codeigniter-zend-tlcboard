@@ -137,23 +137,20 @@ class Ajax_action extends MY_Controller {
         require_once APPPATH . 'libraries/HTMLPurifier/HTMLPurifier.auto.php';
         $_SESSION['center_login_name'] = 'aum';
         //$this->load->library('ip2location_lite');
-        $this->load->library('firephp');
+        //$this->load->library('firephp');
         $this->load->library('securimage/securimage');
         $this->load->library('input');
 
         $this->load->helper('text');
 
-        //$this->firephp->log($this->input->ip_address());
-        //$this->firephp->log($this->ip2location_lite->getCity($this->input->ip_address()));
-
         $this->load->model('model_block_ip', 'block_ip');
         $this->load->model('model_bad_word', 'bad_word');
         $this->load->model('model_post', 'post');
-        
+        $delthumb=0;
         //---------test--------------------
-        $session_tlc->username = $_SESSION['center_login_name'];
-        $this->firephp->log($_SESSION);
-        $this->firephp->log($this->input->post());
+        //$session_tlc->username = $_SESSION['center_login_name'];
+        //$this->firephp->log($_SESSION);
+        //$this->firephp->log($this->input->post());
         //---------endtest--------------------
         
         if($session_tlc->checkpost['post']!=$this->input->post('code_post')){
@@ -181,7 +178,6 @@ class Ajax_action extends MY_Controller {
         }
 
         
-
         foreach ($this->bad_word->fetchAll() as $value) {
             $badword_arr[] = $value['bad_word'];
         }
@@ -191,7 +187,7 @@ class Ajax_action extends MY_Controller {
                         a[href],
                         img[src|alt],
                         span,param,
-                        br,i,b,ul,li
+                        br,i,b,ul,li,p
                         ';
 
         $config = HTMLPurifier_Config::createDefault();
@@ -207,9 +203,21 @@ class Ajax_action extends MY_Controller {
         $thumb_small = $this->input->post('path_thumb_small', TRUE);
         $thumb_big = $this->input->post('path_thumb_big', TRUE);
         $thumb_ext = $this->input->post('pic_ext', TRUE);
+        $delthumb = $this->input->post('delthumb', TRUE);
         $thumb_name_only = $this->input->post('name_only', TRUE);
         $this->firephp->log($thumb_small,$thumb_big);
-        if(!empty($thumb_small) and !empty ($thumb_big)){
+        
+        $post_detail = $htmlpurifier->purify($this->input->post('post_detail', TRUE), $config);
+        $post_detail=nl2br($post_detail);
+        $post_detail = word_censor($post_detail, $badword_arr, '***');
+        $post_topic = strip_tags(trim($this->input->post('post_topic', TRUE)));
+        $post_name = strip_tags(trim($this->input->post('post_name', TRUE)));
+        $post_category = strip_tags(trim($this->input->post('category', TRUE)));
+        $post_tag = strip_tags($this->input->post('post_tag', TRUE));
+        $slug = strip_tags($this->input->post('slug', TRUE));
+        $button = strip_tags($this->input->post('submit_value', TRUE));
+        
+        if((!empty($thumb_small) and !empty ($thumb_big)) and ($delthumb==0) and ($button!="preview") ){
             //ใส่รูป thumb
             $time_name=date("Y/n/j/H");
             $dir_pre = $this->config->item('fullpath_data') . "board/";
@@ -226,8 +234,8 @@ class Ajax_action extends MY_Controller {
                     echo json_encode($status);
                     die();
             }else{
-                    $urlthumb_big=$this->input->post('urlpath_data').$this->input->post('image_thumb_big');
-                    $urlthumb_small=$this->input->post('urlpath_data').$this->input->post('image_thumb_small');
+                    $urlthumb_big=$this->config->item('urlpath_data')."board/".$time_name."/".$thumb_name_only."_big".".".$thumb_ext ;
+                    $urlthumb_small=$this->config->item('urlpath_data')."board/".$time_name."/".$thumb_name_only."_small".".".$thumb_ext;
                     $isthumb= 1 ;
             }
         }else{
@@ -236,15 +244,6 @@ class Ajax_action extends MY_Controller {
                 $isthumb= 0 ;
         }
 
-        $post_detail = $htmlpurifier->purify($this->input->post('post_detail', TRUE), $config);
-        $post_detail = word_censor($post_detail, $badword_arr, '***');
-        $post_topic = strip_tags(trim($this->input->post('post_topic', TRUE)));
-        $post_name = strip_tags(trim($this->input->post('post_name', TRUE)));
-        $post_category = strip_tags(trim($this->input->post('category', TRUE)));
-        $post_tag = strip_tags($this->input->post('post_tag', TRUE));
-        $slug = strip_tags($this->input->post('slug', TRUE));
-        $button = strip_tags($this->input->post('submit_value', TRUE));
-
         $data['post_status'] = $button;
         $data['cate_key'] = $post_category;
         $data['post_detail'] = $post_detail;
@@ -252,43 +251,51 @@ class Ajax_action extends MY_Controller {
         $data['post_name'] = $post_name;
         $data['post_tag'] = $post_tag;
         $data['slug'] = $slug;
+        $data['post_tmp']=$isthumb;
         $data['thumb_small'] = $urlthumb_small;
         $data['thumb_big'] = $urlthumb_big;
-        $data['ip'] = $this->input->ip_address();
+        $data['post_ip'] = $this->input->ip_address();
         $data['mode_comment'] = $this->input->post('mode_comment', TRUE);
-
-        if (!$this->post->check_uniq('slug', $slug)) {
-            //$this->firephp->log("ซ้ำ");
-            $status['success'] = 0;
-            $status['error'] = "slug ต้องไม่ซ้ำ";
-            echo json_encode($status);
-            die();
-        }
-        
-   
-        
+            
+         
         //var_dump($data);
-        if ($button == "publish") {
+        if (($button == "publish") or ($button == "draft")) {
             if($this->post->insert($data)){
+                if ((!$this->post->check_uniq('slug', $slug)) and ($button != "preview")) {
+                    //$this->firephp->log("ซ้ำ");
+                    $status['success'] = 0;
+                    $status['error'] = "slug ต้องไม่ซ้ำ";
+                    echo json_encode($status);
+                    die();
+                }
               $status['success']=1;
             }else{
                $status['success']=0; 
             }
-            $status['callback'] = "publish";
-        } elseif ($button == "preview") {
-            if($this->post->insert($data)){
+            $status['callback'] = $button;
+        }elseif ($button == "preview") {
               $status['success']=1;
-            }else{
-               $status['success']=0; 
-            }
+              $data['post_detail']=htmlspecialchars($data['post_detail']);
+              setcookie("data_post",json_encode($data),time()+1200,"/");
+              //$this->firephp->log(json_encode($data));
+              //$this->firephp->log("setcookie preview");
+             // $this->firephp->log($_COOKIE["data_post"]);
             $status['callback'] = "preview";
-        } elseif ($button == "draft") {
-            if($this->post->insert($data)){
+        }elseif ($button == "edit") {
+            $post_id = $this->input->post('post_id', TRUE);
+            $data['post_status'] = "publish";
+            if ((!$this->post->check_uniq('slug', $slug,$post_id)) and ($button != "preview")) {
+                $status['success'] = 0;
+                $status['error'] = "slug ต้องไม่ซ้ำ";
+                echo json_encode($status);
+                die();
+            }
+            if($this->post->update($data,$post_id)){
               $status['success']=1;
             }else{
                $status['success']=0; 
             }
-            $status['callback'] = "draft";
+            $status['callback'] = "edit";
         }
         //$session_tlc->checkpost['post']='0000000000';
         echo json_encode($status);

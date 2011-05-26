@@ -20,7 +20,7 @@
 
             // General options
     		theme : "advanced",
-			plugins : "pdw,advimage,advlink,media,emotions,preview,emotions,inlinepopups,insertdatetime,contextmenu,paste",
+			plugins : "pdw,advimage,advlink,media,emotions,preview,emotions,inlinepopups,insertdatetime,contextmenu,paste,fullscreen",
 			skin : "cirkuit",
 			
             // Theme options
@@ -29,21 +29,23 @@
 			theme_advanced_buttons2_add : "separator,forecolor",
 			theme_advanced_buttons2_add_before: "cut,copy,paste,pastetext,pasteword,separator",
 			theme_advanced_buttons3_add_before : "",
-			theme_advanced_buttons3_add : "media,youtube,emotions",
+			theme_advanced_buttons3_add : "media,youtube,emotions,fullscreen",
 			theme_advanced_toolbar_location : "top",
 			theme_advanced_toolbar_align : "left",
 			theme_advanced_statusbar_location : "bottom",
 			theme_advanced_disable : "fontselect  ,styleselect ,help",
 			extended_valid_elements : "hr[class|width|size|noshade]",
 			paste_use_dialog : true,
-			theme_advanced_resizing : true,
-			theme_advanced_resize_horizontal : true,
+			width : "630",
+			height :"400",
+			theme_advanced_resizing : false,
+			theme_advanced_resize_horizontal : false,
 			apply_source_formatting : true,
 			force_br_newlines : true,
 			force_p_newlines : false,
 			relative_urls : false,
             pdw_toggle_on : "1",
-            pdw_toggle_toolbars : "2,3",
+            pdw_toggle_toolbars : "2,3"
 
             // Example content CSS (should be your site CSS)
             //content_css : "{/literal}{$assets_path}{literal}tiny_mce/css/content.css"
@@ -54,8 +56,16 @@
         	var options = { 
         	    beforeSubmit:  showRequest,  // pre-submit callback 
         		success:       showResponse , // post-submit callback 
-        		url:"/board/ajax_action/save.html",
+        		//url:"/board/ajax_action/save.html",
         		type:     "post",        // 'get' or 'post', override for form's 'method' attribute 
+                        timeout: 60000,
+                          complete: function(jqXHR, textStatus){
+                         
+                       if(textStatus=="timeout") 
+                            alert("เกิดข้อผิดพลาดจากการที่ server หรือ network ทำงานช้า");
+                                else   alert(textStatus);
+                                $('#form_topic').unblock(); 
+                           }, 
         		dataType:  "json"       // 'xml', 'script', or 'json' (expected server response type) 
         	    }; 
        
@@ -235,6 +245,11 @@
 	            message: '<h1>Processing</h1>', 
 	            css: { border: '3px solid #a00' } 
 	        }); 
+        }
+
+        function submit_form(text){
+        	$("#submit_value").val(text);
+        	//$('#form_post').submit();	
         }
                     
 	</script>

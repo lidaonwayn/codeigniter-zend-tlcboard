@@ -5,6 +5,7 @@ class Test extends MY_Controller {
        function __construct()
        {
             parent::__construct();
+            $this->load->library('firephp');
        }
 
      function test_debug()
@@ -297,6 +298,31 @@ class Test extends MY_Controller {
 		//$img->setAudioPath('/path/to/securimage/audio/');
 		$img->outputAudioFile();
     }
+    
+    function test_cache()
+    {
+        require(APPPATH . 'config/zend_cache.php');
+        $this->load->library('Zend');
+        $this->zend->load('Zend/Cache');
+          $this->cache = Zend_Cache::factory(
+                        'Core', 'Two Levels', $zcache['frontendOpts'], $zcache['options']
+        );
+         $key_cache = 'test';
+        $this->firephp->log('load cache = '.$this->cache->load($key_cache));
+        if (($result = $this->cache->load($key_cache))=== false ) {
+            $result=1;
+            $this->cache->save($result, $key_cache);
+            $this->firephp->log("nocache ".$result);
+            return $result;
+        }else {
+            $result++;
+            $this->cache->save($result, $key_cache);
+            $this->firephp->log("cache  ".$result);
+            return $result;
+        }     
+    }  
+
+
 }
 
 
