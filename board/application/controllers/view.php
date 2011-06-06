@@ -20,7 +20,10 @@ class view extends MY_Controller {
         $this->load->model('model_category', 'category');
         $this->load->model('model_reply', 'reply');
         $this->load->library('pagination');
-        $post_id=$this->uri->segment($segment_begin + 1);
+        $post_id=str_replace('.html','',$this->uri->segment($segment_begin + 1));
+        //$post_id=substr($this->uri->segment($segment_begin + 1),0, -5);
+        //var_dump(str_replace('.html','',$post_id)) ;
+        //exit;
         $data=$this->post->fetch($post_id);
         $data['assets_path'] = $this->config->item('assets_path');
         $data['relate_slug']=$this->post->relate_slug($data['slug'],$post_id);
@@ -32,14 +35,15 @@ class view extends MY_Controller {
         $cparent = $this->category->fetch_each_parent($category['cate_parent']);
 
         ////////// page ////////////////////
-        $page['base_url'] = base_url().'view/'.$post_id.'/'.$data['slug'];
-        $page_current=$this->uri->segment($segment_begin + 3);
+        //$page['base_url'] = base_url().'view/'.$post_id.'/'.$data['slug'];
+        $page['base_url'] = base_url().'view/'.$post_id.".html";
+        $page_current=$this->uri->segment($segment_begin + 2);
         if (empty($page_current)) $page_current=1 ;
         $page['full_tag_open'] = '<center>';
         $page['full_tag_close'] = '</center>';
         $page['first_link'] = 'First';
         $page['last_link'] = 'Last';
-        $page['uri_segment'] = 4;
+        $page['uri_segment'] = 3;
         $page['display_pages'] = true;  
         $page['total_rows'] = $this->reply->count($post_id,$this->config->item('table_reply'));
         $page['per_page'] = $per_page; 

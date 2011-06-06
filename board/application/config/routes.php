@@ -38,10 +38,13 @@
 |
 */
 
-$route['default_controller'] = "welcome";
+//$route['default_controller'] = "welcome";
 $route['404_override'] = '';
 
-$route['view/(:num)/(:any)'] = "view/index/$2/$3";
+//$route['view/preview.html']="view/preview";
+$route['view/(\d+).html(/\d+)'] = "view/index/$1";
+//$route['view/preview.html']="view/preview";
+//$route['view/(:num)'] = "view/index/$2";
 // Loader
 //$route["asset/:any"] = "asset_controller/index";
 

@@ -39,7 +39,13 @@
                                 </div>
 				<br />
 				<label for="post_topic">ผู้โพสต์</label>
-				<input type="text" name="post_name" id="post_name" class="validate[required,minSize[3]] text-input" value="{if isset($post_name)}{$post_name}{/if}" />
+                                {if isset($session_post_name)}
+				<input type="text" name="post_name" id="post_name" readonly="readonly"  value="{$session_post_name}" />
+                                {elseif isset($post_name)}
+				<input type="text" name="post_name" id="post_name" class="validate[required,minSize[3]] text-input" value="{$post_name}" />
+                                {else}
+                                <input type="text" name="post_name" id="post_name" class="validate[required,minSize[3]] text-input" value="" />
+                                {/if}
 				 ip address {$ip} <br />
 				แสดงความคิดเห็น 
 				<input type="radio" name="mode_comment" id="mode_comment" value="on" class="validate[required] radio" {if $mode_comment=='on'}checked="checked"{/if}/>อนุญาต
