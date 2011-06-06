@@ -135,7 +135,7 @@ class Ajax_action extends MY_Controller {
         
         $session_tlc = new Zend_Session_Namespace('tlcthai');
         require_once APPPATH . 'libraries/HTMLPurifier/HTMLPurifier.auto.php';
-        $_SESSION['center_login_name'] = 'aum';
+       
         //$this->load->library('ip2location_lite');
         //$this->load->library('firephp');
         $this->load->library('securimage/securimage');
